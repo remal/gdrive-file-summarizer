@@ -1,3 +1,1 @@
-# oss-template
-
-Template repository for open-source projects
+# gdrive-file-summarizer
