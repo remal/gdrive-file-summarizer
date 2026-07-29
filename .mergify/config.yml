@@ -1,0 +1,48 @@
+# Configuration file for Mergify GitHub App: https://github.com/marketplace/mergify
+
+#$schema: 'https://docs.mergify.com/mergify-configuration-schema.json'
+
+merge_queue:
+  queue_controls_comment: false
+
+pull_request_rules:
+- name: Auto merge dependency updates
+  conditions:
+  - 'author~=^(dependabot(-preview)?|renovate)\[bot\]$'
+  - '-files~=^(\.github/|\.gitlab/)?renovate\.json5?$'
+  - '-files~=^\.renovaterc(\.json5?)?$'
+  - '-conflict'
+  - '-closed'
+  - '-merged'
+  - '-draft'
+  - '#changes-requested-reviews-by=0'
+  - 'check-success=build'
+  - '-check-pending~=^(?!@mergify/|Mergify Merge Queue$).+'
+  - '-check-failure~=^(?!@mergify/).+'
+  actions:
+    review: { }
+    merge:
+      method: squash
+      commit_message_format:
+        title: pr-title
+        body: empty
+
+- name: Sync with template
+  conditions:
+  - 'author~=^(remal|repository-token-issuer\[bot\])$'
+  - 'label=sync-with-template'
+  - '-conflict'
+  - '-closed'
+  - '-merged'
+  - '-draft'
+  - '#changes-requested-reviews-by=0'
+  - 'check-success=build'
+  - '-check-pending~=^(?!@mergify/|Mergify Merge Queue$).+'
+  - '-check-failure~=^(?!@mergify/).+'
+  actions:
+    review: { }
+    merge:
+      method: squash
+      commit_message_format:
+        title: pr-title
+        body: empty

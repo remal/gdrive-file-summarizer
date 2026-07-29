@@ -1,0 +1,89 @@
+name: 'Template cleanup: oss-template'
+
+on:
+  push:
+    branches:
+    - main
+
+permissions:
+  id-token: write
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  check-repository:
+    name: Check repository
+    if: ${{github.repository != 'remal/oss-template'}}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      status: ${{steps.creation-date.outputs.status}}
+    steps:
+    - name: Check repository creation date
+      id: creation-date
+      uses: actions/github-script@v9
+      with:
+        script: |
+          const repository = await github.rest.repos.get({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+          }).then(it => it.data)
+          const createdDate = new Date(repository.created_at)
+          core.info(`Created at: ${createdDate}`)
+          const sinceCreationMillis = new Date().getTime() - createdDate
+          const sinceCreationHours = sinceCreationMillis / (60 * 60 * 1000)
+          const isNew = sinceCreationHours <= 1
+          const status = isNew ? 'new' : 'old'
+          core.warning(`Hours passed since creation: ${sinceCreationHours} => status: ${status}`)
+          core.setOutput('status', status)
+
+  template-cleanup:
+    needs:
+    - check-repository
+    if: ${{needs.check-repository.outputs.status == 'new'}}
+    name: Template cleanup
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+    - name: Get GitHub Token
+      id: get-token
+      uses: remal/github-repository-token-issuer@v1
+      with:
+        scopes: |
+          contents: write
+          workflows: write
+
+    - name: Checkout repository
+      uses: actions/checkout@v7
+      with:
+        token: ${{steps.get-token.outputs.token}}
+
+    - name: Cleanup
+      run: |
+        export LC_CTYPE=C
+        export LANG=C
+
+        NAME="${GITHUB_REPOSITORY##*/}"
+
+        sed -i "s/%NAME%/${NAME}/g" .github/oss-template-cleanup/*
+        sed -i "s/%REPOSITORY%/${GITHUB_REPOSITORY/\//\\/}/g" .github/oss-template-cleanup/*
+        cp -R .github/oss-template-cleanup/. .
+
+        rm -rf \
+          .github/oss-template-cleanup \
+          .github/workflows/oss-template-cleanup.yml
+
+    - name: Push back
+      id: push-back
+      if: ${{github.event_name == 'push' && startsWith(github.ref, 'refs/heads/')}}
+      uses: remal-github-actions/push-back@v2
+      with:
+        message: 'Template cleanup'
+
+    - name: Fail if the repository was changed before pushing back
+      if: ${{steps.push-back.outputs.result == 'remote-changed'}}
+      run: |
+        echo "The repository was changed before pushing back"
+        exit 1
