@@ -11,7 +11,7 @@ on:
     paths:
     - '.github/workflows/*.yml'
   schedule:
-  - cron: '19 2 * * *' # sync-with-template: adjust
+  - cron: '21 4 * * *' # sync-with-template: adjust
   workflow_dispatch: { }
 
 permissions:
