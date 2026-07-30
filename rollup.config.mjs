@@ -13,12 +13,18 @@ function appsScriptOutput() {
 }
 
 export default {
-    input: 'src/Process.ts',
+    // Process.ts (Code.js) is the provider-agnostic library entry point; it must not import
+    // GeminiLLM.ts. Compiling it as a separate entry keeps it in the deployed Apps Script
+    // project (all files in a project share one global scope) without that import.
+    input: {
+        Code: 'src/Process.ts',
+        GeminiLLM: 'src/GeminiLLM.ts',
+    },
     treeshake: false,
     output: {
         dir: 'dist',
         format: 'esm',
-        entryFileNames: 'Code.js',
+        entryFileNames: '[name].js',
     },
     plugins: [typescript(), appsScriptOutput()],
 };

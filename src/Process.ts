@@ -1,6 +1,4 @@
 import {computeSignature_, listFilesRecursively_} from './Drive'
-// Not referenced from this file; imported so Rollup includes it in the single Code.js bundle.
-import './GeminiLLM'
 import {LLM, ResponseSchema} from './LLM'
 
 export interface ProcessResult {
