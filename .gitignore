@@ -99,3 +99,7 @@ out/
 .settings/
 bin/
 !**/src/**/bin/
+
+
+# NodeJS build output:
+dist/

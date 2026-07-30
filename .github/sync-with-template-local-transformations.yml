@@ -1,0 +1,18 @@
+$schema: https://raw.githubusercontent.com/remal-github-actions/sync-with-template/main/local-transformations.schema.json
+
+repositories:
+- remal/gdrive-file-summarizer
+
+transformations:
+- name: .gitignore
+  format: text
+  includes:
+  - .gitignore
+  script: |
+    return content
+        + [
+            '',
+            '# NodeJS build output:',
+            'dist/',
+            '',
+        ].join('\n')
