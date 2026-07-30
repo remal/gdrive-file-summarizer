@@ -58,7 +58,7 @@ sequenceDiagram
     T->>S: run()
     S->>O: read existing signatures
     O-->>S: known signatures by file ID
-    S->>L: process(folderId, knownSignatures, instructions, llmConfig)
+    S->>L: process(folderId, knownSignatures, instructions, llm, schema)
     L->>D: list files recursively
     D-->>L: file list
 
@@ -67,7 +67,7 @@ sequenceDiagram
         D-->>L: file bytes
         L->>G: upload file
         G-->>L: file reference
-        L->>G: summarize(fileRef, instructions)
+        L->>G: summarize(fileRef, instructions, schema)
         G-->>L: response
         L->>G: delete file
     end
@@ -84,9 +84,12 @@ sequenceDiagram
   deployed as versioned releases. Each consuming Sheet pins a specific library version.
 - **Consumer sheet.** Each Google Sheet has a bound script that holds its own config: the base
   Drive folder (traversed recursively), summarization instructions (which can vary by file
-  mimetype), and LLM provider settings.
+  mimetype), the expected response schema, and LLM provider settings.
 - **Credentials.** The LLM API key is stored in User Properties, never in a cell.
 - **Triggers.** Both a time-driven trigger and a manual menu item call into the same entry point.
+- **Google Workspace files.** Docs, Sheets, Slides, and other native Google formats are skipped
+  entirely rather than processed. They only exist as an on-demand export, and there's no way to
+  fetch that export in ranged chunks.
 - **No direct spreadsheet access.** A library isn't a container-bound script, so it can't read or
   write the calling Sheet itself. The Sheet script reads its own hidden signature column and
   passes the known signatures into the library call, then takes the library's return value and
@@ -100,8 +103,9 @@ sequenceDiagram
   upload mechanism is provider-specific.
 - **Cleanup.** Once the response comes back, the library deletes the uploaded file instead of
   leaving a copy of a personal document on the provider's servers.
-- **Response handling.** The library returns the raw LLM response for each processed file. The
-  Sheet's own bound script parses those responses and appends a new row with the summary,
-  status/error, and signature columns, since that logic is specific to each Sheet.
+- **Response handling.** The Sheet script passes in the response schema it wants back, and the
+  library returns a matching parsed response for each processed file. The Sheet's own bound script
+  turns those responses into a new row with the summary, status/error, and signature columns,
+  since that logic is specific to each Sheet.
 - **Execution limits.** Not addressed for now: since only new or changed files are reprocessed on
   each run, Apps Script's 6-minute execution limit is not expected to be an issue in steady state.
