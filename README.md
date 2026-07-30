@@ -9,6 +9,34 @@ Point it at a Google Drive folder containing personal documents. Each file in th
 analyzed and summarized, and all summaries are collected in a single spreadsheet, one row per
 file.
 
+## Usage
+
+### LLM Configuration
+
+#### Gemini
+
+**Via Google AI Studio:**
+
+1. Go to [Google AI Studio](https://aistudio.google.com/app/apikey).
+2. Sign in with the Google account whose Drive folder you want to summarize.
+3. Click **Create API key**, then pick or create a Google Cloud project to attach it to.
+4. Copy the generated key.
+
+**Via Google Cloud Console** (if you already have a project there, e.g. one with billing already
+set up):
+
+1. Go to the [Google Cloud Console](https://console.cloud.google.com/), and make sure the project
+   selector at the top shows the project you want the key on.
+2. Click **Create Gemini API key**.
+3. Copy the generated key.
+
+Either path produces the same kind of key, scoped to whichever project you picked or had selected.
+
+> [!NOTE]
+> A key on the free tier lets Google use your submitted content to improve their products. Enable
+> billing on the project the key belongs to if you want that turned off, without changing anything
+> else about the key.
+
 ## Design
 
 One shared library serves every consuming Sheet. Each Sheet supplies its own folder, instructions,
