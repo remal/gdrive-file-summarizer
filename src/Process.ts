@@ -1,6 +1,7 @@
 import {computeSignature_, listFilesRecursively_} from './Drive'
-import {GeminiConfig, GeminiLLM} from './GeminiLLM'
-import {ResponseSchema} from './LLM'
+// Not referenced from this file; imported so Rollup includes it in the single Code.js bundle.
+import './GeminiLLM'
+import {LLM, ResponseSchema} from './LLM'
 
 export interface ProcessResult {
     fileId: string
@@ -13,10 +14,9 @@ export function process(
     folderId: string,
     knownSignatures: Record<string, string>,
     instructions: string,
-    geminiConfig: GeminiConfig,
+    llm: LLM,
     schema: ResponseSchema,
 ): ProcessResult[] {
-    const llm = new GeminiLLM(geminiConfig)
     const results: ProcessResult[] = []
 
     for (const file of listFilesRecursively_(folderId)) {
