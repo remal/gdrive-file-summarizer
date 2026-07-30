@@ -15,8 +15,13 @@ interface GeminiFileResource {
     state: 'PROCESSING' | 'ACTIVE' | 'FAILED'
 }
 
+export interface GeminiConfig {
+    apiKey: string
+    model: string
+}
+
 export class GeminiLLM implements LLM {
-    constructor(private readonly apiKey: string, private readonly model: string) {
+    constructor(private readonly config: GeminiConfig) {
     }
 
     upload(fileId: string): FileRef {
@@ -27,7 +32,7 @@ export class GeminiLLM implements LLM {
         const startResponse = fetchOrThrow_(UPLOAD_URL, {
             method: 'post',
             headers: {
-                'x-goog-api-key': this.apiKey,
+                'x-goog-api-key': this.config.apiKey,
                 'X-Goog-Upload-Protocol': 'resumable',
                 'X-Goog-Upload-Command': 'start',
                 'X-Goog-Upload-Header-Content-Length': String(totalSize),
@@ -89,9 +94,9 @@ export class GeminiLLM implements LLM {
     }
 
     summarize(fileRef: FileRef, instructions: string, schema: ResponseSchema): Record<string, string> {
-        const response = fetchOrThrow_(`${API_BASE}/models/${this.model}:generateContent`, {
+        const response = fetchOrThrow_(`${API_BASE}/models/${this.config.model}:generateContent`, {
             method: 'post',
-            headers: {'x-goog-api-key': this.apiKey},
+            headers: {'x-goog-api-key': this.config.apiKey},
             contentType: 'application/json',
             payload: JSON.stringify({
                 contents: [{
@@ -118,7 +123,7 @@ export class GeminiLLM implements LLM {
     deleteFile(fileRef: FileRef): void {
         fetchOrThrow_(`${API_BASE}/${fileRef.id}`, {
             method: 'delete',
-            headers: {'x-goog-api-key': this.apiKey},
+            headers: {'x-goog-api-key': this.config.apiKey},
         })
     }
 
@@ -131,7 +136,7 @@ export class GeminiLLM implements LLM {
             }
             Utilities.sleep(POLL_INTERVAL_MILLIS)
             const response = fetchOrThrow_(`${API_BASE}/${current.name}`, {
-                headers: {'x-goog-api-key': this.apiKey},
+                headers: {'x-goog-api-key': this.config.apiKey},
             })
             current = JSON.parse(response.getContentText()) as GeminiFileResource
         }

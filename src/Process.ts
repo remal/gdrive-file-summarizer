@@ -1,5 +1,6 @@
 import {computeSignature_, listFilesRecursively_} from './Drive'
-import {LLM, ResponseSchema} from './LLM'
+import {GeminiConfig, GeminiLLM} from './GeminiLLM'
+import {ResponseSchema} from './LLM'
 
 export interface ProcessResult {
     fileId: string
@@ -12,9 +13,10 @@ export function process(
     folderId: string,
     knownSignatures: Record<string, string>,
     instructions: string,
-    llm: LLM,
+    geminiConfig: GeminiConfig,
     schema: ResponseSchema,
 ): ProcessResult[] {
+    const llm = new GeminiLLM(geminiConfig)
     const results: ProcessResult[] = []
 
     for (const file of listFilesRecursively_(folderId)) {
