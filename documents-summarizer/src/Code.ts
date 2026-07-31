@@ -4,7 +4,7 @@ export function runSummarization(): void {
     // TODO
 }
 
-function onOpen(): void {
+export function onOpen(): void {
     const menu = SpreadsheetApp.getUi().createMenu('Summarizer')
     if (hasApiKey_()) {
         menu.addItem('Run', runSummarization.name)
