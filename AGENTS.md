@@ -11,3 +11,8 @@ constructed `LLM` instance, so if a class turns out unreachable, callers need so
 obtain one (e.g. a factory function).
 
 Never on class methods/fields, not exposed either way; use `private`.
+
+## Tooling: clasp
+
+`clasp` is a devDependency, not a global install. Run it via `./node_modules/.bin/clasp <command>`
+(or `npx clasp <command>`, which resolves to the same local binary).
