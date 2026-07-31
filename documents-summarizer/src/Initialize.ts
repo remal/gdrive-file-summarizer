@@ -18,7 +18,7 @@ export function initialize(): void {
 
     PropertiesService.getUserProperties().setProperty(API_KEY_PROPERTY, apiKey)
     ensureScheduledTrigger_()
-    ui.alert('Gemini API key saved. Reopen the Summarizer menu to run summarization.')
+    ui.alert('Gemini API key saved. Reload this spreadsheet for the Summarizer menu to show Run.')
 }
 
 export function hasApiKey_(): boolean {
