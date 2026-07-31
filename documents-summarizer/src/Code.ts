@@ -1,5 +1,9 @@
 import {hasApiKey_, initialize} from './Initialize'
 
+export function runSummarization(): void {
+    // TODO
+}
+
 function onOpen(): void {
     const menu = SpreadsheetApp.getUi().createMenu('Summarizer')
     if (hasApiKey_()) {
@@ -8,8 +12,4 @@ function onOpen(): void {
         menu.addItem('Initialize', initialize.name)
     }
     menu.addToUi()
-}
-
-// Left empty pending decisions on where results are written and how known signatures are tracked.
-export function runSummarization(): void {
 }
