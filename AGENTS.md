@@ -16,3 +16,15 @@ Never on class methods/fields, not exposed either way; use `private`.
 
 `clasp` is a devDependency, not a global install. Run it via `./node_modules/.bin/clasp <command>`
 (or `npx clasp <command>`, which resolves to the same local binary).
+
+## Building and deploying
+
+`npm run build` compiles both modules (`library`, `documents-summarizer`) to `<module>/dist`
+(gitignored), which is also `clasp`'s push root (`rootDir` in `.clasp.json`). `npm run deploy`
+builds, then runs `clasp push` for each module, in the same order.
+
+`clasp push` needs `clasp login` done once beforehand (saves credentials to the user's home
+directory, not checked into git) and a `.clasp.json` with a `scriptId` in the module's directory.
+
+Build or deploy a single module with `build:library`, `deploy:library`,
+`build:documents-summarizer`, or `deploy:documents-summarizer`.
