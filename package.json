@@ -4,8 +4,10 @@
   "scripts": {
     "build:library": "scripts/build.sh library",
     "deploy:library": "scripts/deploy.sh library",
-    "build": "npm run build:library",
-    "deploy": "npm run deploy:library"
+    "build:documents-summarizer": "scripts/build.sh documents-summarizer",
+    "deploy:documents-summarizer": "scripts/deploy.sh documents-summarizer",
+    "build": "npm run build:library && npm run build:documents-summarizer",
+    "deploy": "npm run deploy:library && npm run deploy:documents-summarizer"
   },
   "devDependencies": {
     "@google/clasp": "3.3.0",
